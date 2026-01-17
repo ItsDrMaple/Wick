@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maplehost</title>
+
+<style>
+/* ================= BASE ================= */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter,system-ui,sans-serif;
+  background:#0f0f0f;
+  color:#fff;
+}
+a{text-decoration:none;color:inherit}
+
+/* ================= HEADER ================= */
+header{
+  position:sticky;
+  top:0;
+  background:rgba(15,15,15,.75);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  z-index:50;
+}
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:0 24px;
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+nav a{
+  margin-left:24px;
+  opacity:.7;
+  transition:.2s;
+}
+nav a:hover{opacity:1}
+
+/* ================= BUTTON ================= */
+.btn{
+  background:#fff;
+  color:#000;
+  padding:12px 26px;
+  border-radius:999px;
+  font-weight:600;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  transition:.25s;
+  box-shadow:0 0 40px rgba(255,255,255,.25);
+}
+.btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 60px rgba(255,255,255,.4);
+}
+
+/* ================= HERO ================= */
+.hero{
+  text-align:center;
+  padding:220px 24px;
+  background:radial-gradient(circle 1200px at 50% -40%,rgba(255,255,255,.14),transparent);
+}
+.hero h1{
+  font-size:5rem;
+  font-weight:800;
+  margin-bottom:24px;
+}
+.hero p{
+  max-width:900px;
+  margin:auto;
+  font-size:1.25rem;
+  opacity:.85;
+  margin-bottom:48px;
+}
+
+/* ================= SECTIONS ================= */
+section{padding:160px 24px}
+section:nth-child(even){background:rgba(255,255,255,.04)}
+h2{
+  text-align:center;
+  font-size:3.5rem;
+  font-weight:800;
+  margin-bottom:56px;
+}
+
+/* ================= GRID ================= */
+.grid{
+  display:grid;
+  gap:24px;
+  max-width:1200px;
+  margin:auto;
+}
+@media(min-width:768px){.grid{grid-template-columns:repeat(3,1fr)}}
+.card{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;
+  padding:40px 32px;
+  text-align:center;
+  transition:.35s;
+}
+.card:hover{
+  transform:translateY(-12px);
+  background:rgba(255,255,255,.12);
+}
+
+/* ================= REVIEWS SLIDESHOW ================= */
+.review-stage{
+  max-width:800px;
+  margin:auto;
+  position:relative;
+  height:90px;
+  overflow:hidden;
+}
+.review{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transform:translateX(-100%);
+  transition:transform 1s ease, opacity 1s ease;
+  font-size:1.35rem;
+  text-align:center;
+}
+.review.active{
+  opacity:1;
+  transform:translateX(0);
+}
+.review.exit{
+  transform:translateX(100%);
+  opacity:0;
+}
+
+/* ================= TRUST BADGE ================= */
+.trust{
+  margin-top:56px;
+  text-align:center;
+}
+.trust span{
+  display:inline-block;
+  padding:14px 30px;
+  border-radius:999px;
+  font-size:1.4rem;
+  font-weight:600;
+  background:linear-gradient(135deg,#ffffff22,#ffffff08);
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 0 45px rgba(255,255,255,.18);
+}
+
+/* ================= MODAL ================= */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+  animation:fadeIn .3s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.modal-content{
+  background:linear-gradient(180deg,#161616,#0e0e0e);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:22px;
+  padding:48px;
+  width:100%;
+  max-width:440px;
+  box-shadow:
+    0 0 80px rgba(255,255,255,.18),
+    inset 0 0 40px rgba(255,255,255,.05);
+  animation:modalPop .45s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes modalPop{
+  from{transform:translateY(20px) scale(.95);opacity:0}
+  to{transform:none;opacity:1}
+}
+
+.modal-content h3{
+  text-align:center;
+  margin-bottom:32px;
+}
+.modal-content input{
+  width:100%;
+  padding:14px;
+  margin-bottom:8px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.15);
+  background:#0b0b0b;
+  color:#fff;
+}
+.modal-content input:focus{
+  outline:none;
+  border-color:#fff;
+  box-shadow:0 0 22px rgba(255,255,255,.3);
+}
+.close{
+  margin-top:16px;
+  background:none;
+  border:none;
+  color:#aaa;
+  cursor:pointer;
+}
+#error-msg{
+  color:red;
+  display:none;
+  margin-bottom:12px;
+}
+
+/* ================= FOOTER ================= */
+footer{
+  padding:64px;
+  text-align:center;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="container">
+    <strong>Maplehost</strong>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#reviews">Reviews</a>
+    </nav>
+    <a class="btn open-modal">Dashboard</a>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Wick, discord's best security bot.</h1>
+  <p>
+    Moderation, anti raid, anti nuke, automod, antispam, verification,
+    captcha, utility. Secure your Discord Community fully and have
+    powerful moderation tools at your disposal.
+  </p>
+  <a class="btn open-modal">Get Started for Free →</a>
+</section>
+
+<section id="features">
+  <h2>Everything You Need</h2>
+  <div class="grid">
+    <div class="card">🖥️ 24/7 Uptime</div>
+    <div class="card">⚡ High Performance</div>
+    <div class="card">🛡️ Enterprise DDoS Protection</div>
+  </div>
+</section>
+
+<section id="pricing">
+  <h2>Pricing Plans</h2>
+  <div class="grid">
+    <div class="card"><h3>Free</h3><p>Forever free</p><a class="btn open-modal">Choose Plan</a></div>
+    <div class="card"><h3>Core</h3><p>$6 / month</p><a class="btn open-modal">Choose Plan</a></div>
+    <div class="card"><h3>Business</h3><p>$10 / month</p><a class="btn open-modal">Choose Plan</a></div>
+  </div>
+</section>
+
+<section id="reviews">
+  <h2>What our users say</h2>
+
+  <div class="review-stage">
+    <div class="review active">“You just protected me from a server raid!”</div>
+    <div class="review">“Moved from Dyno, never going back.”</div>
+    <div class="review">“Best free security bot I’ve ever used.”</div>
+    <div class="review">“Saved our 34,000 member server from a raid.”</div>
+  </div>
+
+  <div class="trust">
+    <span>🌐 Trusted by over <strong>369,000 servers</strong></span>
+  </div>
+</section>
+
+<footer>© 2026 Maplehost. All rights reserved.</footer>
+
+<!-- ================= MODAL ================= -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3>Request Access</h3>
+    <input id="email" placeholder="Email">
+    <div id="error-msg">Email doesn't exist</div>
+    <input id="custom" placeholder="Discord Username">
+    <button class="btn" onclick="submitForm()">Submit</button>
+    <button class="close" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+/* ===== REVIEWS SLIDESHOW ===== */
+let r=0;
+const slides=document.querySelectorAll('.review');
+setInterval(()=>{
+  slides[r].classList.remove('active');
+  slides[r].classList.add('exit');
+  r=(r+1)%slides.length;
+  slides[r].classList.add('active');
+  setTimeout(()=>slides.forEach(s=>s.classList.remove('exit')),1000);
+},4500);
+
+/* ===== MODAL ===== */
+const modal=document.getElementById('modal');
+document.querySelectorAll('.open-modal').forEach(b=>{
+  b.onclick=e=>{
+    e.preventDefault();
+    modal.style.display='flex';
+  };
+});
+function closeModal(){
+  modal.style.display='none';
+  document.getElementById('email').value="";
+  document.getElementById('custom').value="";
+  hideError();
+}
+
+/* ===== EMAIL VERIFICATION FRONTEND ONLY ===== */
+const API_KEY = "cc69d1d0-d0d0-492a-b706-f9f8e1ac77d4"; // <-- exposed, fine for private site
+
+async function verifyEmail(email){
+  try{
+    const res = await fetch("https://api.mails.so/v1/verify",{
+      method:"POST",
+      headers:{
+        "Authorization": `Bearer ${API_KEY}`,
+        "Content-Type":"application/json"
+      },
+      body: JSON.stringify({ email })
+    });
+    if(!res.ok) throw new Error();
+    return await res.json();
+  }catch{
+    return { valid:false };
+  }
+}
+
+function showError(){document.getElementById("error-msg").style.display="block";}
+function hideError(){document.getElementById("error-msg").style.display="none";}
+
+async function submitForm(){
+  const email = document.getElementById("email").value.trim();
+  const custom = document.getElementById("custom").value.trim();
+  hideError();
+
+  if(!email || !custom){
+    alert("Fill all fields");
+    return;
+  }
+
+  const result = await verifyEmail(email);
+
+  if(!result.valid || result.disposable || !result.mx){
+    showError();
+    return;
+  }
+
+  alert(`Email is valid!\nEmail: ${email}\nDiscord: ${custom}`);
+  closeModal();
+}
+</script>
+
+</body>
+</html>
