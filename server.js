@@ -8,6 +8,7 @@ const MAILS_API_KEY = process.env.MAILS_API_KEY;
 
 app.post("/verify-email", async (req, res) => {
   const { email } = req.body;
+  if (!email) return res.json({ valid: false });
 
   try {
     const r = await fetch("https://api.mails.so/v1/verify", {
@@ -20,8 +21,13 @@ app.post("/verify-email", async (req, res) => {
     });
 
     const data = await r.json();
-    res.json(data);
-  } catch {
+    // mails.so returns something like { valid: true, disposable: false, mx: true }
+    res.json({
+      valid: data.valid,
+      disposable: data.disposable,
+      mx: data.mx
+    });
+  } catch (err) {
     res.status(500).json({ valid: false, error: "API unreachable" });
   }
 });
@@ -30,6 +36,6 @@ app.get("/", (req, res) => {
   res.send("Backend is running");
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log("Server running on port 3000");
 });
