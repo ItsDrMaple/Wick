@@ -8,7 +8,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// put your real API key in Render environment variables
 const MAILS_API_KEY = process.env.MAILS_API_KEY;
 
 app.get("/", (req, res) => res.send("Server alive"));
@@ -29,19 +28,24 @@ app.post("/verify-email", async (req, res) => {
 
     const data = await response.json();
 
-    // mails.so returns data.valid, data.disposable, data.mx
+    // logic: valid if mails.so says valid and not disposable
+    // ignore MX check for common domains
+    const domain = email.split("@")[1]?.toLowerCase() || "";
+    const commonDomains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com"];
+    const valid =
+      data.valid === true &&
+      data.disposable === false &&
+      (data.mx === true || commonDomains.includes(domain));
+
     res.json({
-      valid: data.valid === true && data.mx === true && data.disposable === false,
+      valid,
       disposable: data.disposable,
       mx: data.mx,
     });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      valid: false,
-      error: "Mail API unreachable",
-    });
+    console.error("Email verify error:", err);
+    res.status(500).json({ valid: false, error: "Mail API unreachable" });
   }
 });
 
