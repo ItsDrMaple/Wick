@@ -1,43 +1,33 @@
 import express from "express";
 import cors from "cors";
-import fetch from "node-fetch";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 app.use(cors());
 app.use(express.json());
 
-const MAILS_API_KEY = process.env.MAILS_API_KEY;
-
+// TEST ROUTE (open this in browser)
 app.get("/", (req, res) => {
-  res.send("Backend alive");
+  res.send("Server is alive");
 });
 
+// EMAIL VERIFY ROUTE
 app.post("/verify-email", async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
-    return res.json({ valid: false, error: "No email" });
+    return res.json({ valid: false });
   }
 
-  try {
-    const r = await fetch("https://api.mails.so/v1/verify", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${MAILS_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email })
-    });
-
-    const data = await r.json();
-    res.json(data);
-
-  } catch (e) {
-    res.status(500).json({ valid: false, error: "API unreachable" });
-  }
+  // temporary fake success so we know frontend works
+  res.json({
+    valid: true,
+    disposable: false,
+    mx: true
+  });
 });
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log("Server running on", PORT);
+  console.log("Server running on port", PORT);
 });
